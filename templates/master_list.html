@@ -1,0 +1,14 @@
+{% extends "landing.html" %}
+{% block content %}
+
+
+<div>
+    {% for master in masters %}
+    <div class="m_list">
+        <p>Имя мастера: {{master.name}}</p>
+        <p>ID Mастера: {{master.id}}</p>
+    </div>
+
+    {% endfor %}
+</div>
+{% endblock content %}
