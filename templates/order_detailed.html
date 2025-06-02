@@ -1,0 +1,20 @@
+{% extends "landing.html" %}
+{% block content %}
+
+<h1>Заказ #{{ order.id }}</h1>
+
+    <div style="border: 1px solid black; margin: 10px; padding: 10px;">
+            
+        <p>Клиент: {{ order.client_name }}</p>
+        <p>Услуги: 
+
+            {% for service in order.services %}
+                <div>{{ service }}</div><br>
+            {% endfor %}
+        </p>
+        <p>Дата: {{ order.date }}</p>
+        <p>Статус: {{ order.status }}</p>
+    </div>
+
+
+{% endblock content %}
