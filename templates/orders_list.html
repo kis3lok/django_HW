@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Список заявок - Барбершоп "Hard Rock"{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>
+            <i class="bi bi-list-ul"></i> Список заявок
+        </h1>
+        <div>
+            <span class="badge bg-primary fs-6">Всего: {{ orders|length }}</span>
+        </div>
+    </div>
+
+    {% if orders %}
+        <div class="row">
+            <div class="col-12">
+                {% for order in orders %}
+                    <div class="card mb-3 shadow-sm">
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-md-8">
+                                    <h5 class="card-title">
+                                        <i class="bi bi-person"></i> {{ order.client_name }}
+                                    </h5>
+                                    <p class="card-text">
+                                        <small class="text-muted">
+                                            <i class="bi bi-calendar"></i> {{ order.date }}
+                                        </small>
+                                    </p>
+                                    <p class="card-text">
+                                        <strong>Услуги:</strong>
+                                        {% for service in order.services %}
+                                            <span class="badge bg-secondary me-1">{{ service }}</span>
+                                        {% endfor %}
+                                    </p>
+                                    {% if order.master %}
+                                    <p class="card-text">
+                                        <i class="bi bi-scissors"></i> <strong>Мастер:</strong> {{ order.master }}
+                                    </p>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-4 text-md-end">
+                                    {% if order.status == 'новая' %}
+                                        <span class="badge bg-warning text-dark fs-6 mb-2">
+                                            <i class="bi bi-clock"></i> {{ order.status|capfirst }}
+                                        </span>
+                                    {% elif order.status == 'подтвержденная' %}
+                                        <span class="badge bg-primary fs-6 mb-2">
+                                            <i class="bi bi-check-circle"></i> {{ order.status|capfirst }}
+                                        </span>
+                                    {% elif order.status == 'выполненная' %}
+                                        <span class="badge bg-success fs-6 mb-2">
+                                            <i class="bi bi-check-all"></i> {{ order.status|capfirst }}
+                                        </span>
+                                    {% elif order.status == 'отмененная' %}
+                                        <span class="badge bg-danger fs-6 mb-2">
+                                            <i class="bi bi-x-circle"></i> {{ order.status|capfirst }}
+                                        </span>
+                                    {% else %}
+                                        <span class="badge bg-secondary fs-6 mb-2">
+                                            {{ order.status|capfirst }}
+                                        </span>
+                                    {% endif %}
+                                    <br>
+                                    <a href="{% url 'order_detail' order.id %}" class="btn btn-outline-primary btn-sm">
+                                        <i class="bi bi-eye"></i> Подробнее
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card bg-light">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <i class="bi bi-graph-up"></i> Статистика заявок
+                        </h5>
+                        <div class="row text-center">
+                            <div class="col-md-3">
+                                <div class="border-end">
+                                    <h4 class="text-warning">{{ new_orders_count|default:0 }}</h4>
+                                    <small class="text-muted">Новые</small>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="border-end">
+                                    <h4 class="text-primary">{{ confirmed_orders_count|default:0 }}</h4>
+                                    <small class="text-muted">Подтверждены</small>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="border-end">
+                                    <h4 class="text-success">{{ completed_orders_count|default:0 }}</h4>
+                                    <small class="text-muted">Выполнены</small>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <h4 class="text-danger">{{ cancelled_orders_count|default:0 }}</h4>
+                                <small class="text-muted">Отменены</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="text-center py-5">
+            <i class="bi bi-inbox display-1 text-muted mb-4"></i>
+            <h3 class="text-muted">Заявок пока нет</h3>
+            <p class="text-muted">Когда появятся новые заявки, они будут отображены здесь</p>
+            <a href="{% url 'landing' %}" class="btn btn-primary">
+                <i class="bi bi-house"></i> На главную
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

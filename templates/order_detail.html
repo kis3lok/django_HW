@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Заявка #{{ order.id }} - Барбершоп "Hard Rock"{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="{% url 'landing' %}">
+                    <i class="bi bi-house"></i> Главная
+                </a>
+            </li>
+            <li class="breadcrumb-item">
+                <a href="{% url 'orders_list' %}">
+                    <i class="bi bi-list-ul"></i> Заявки
+                </a>
+            </li>
+            <li class="breadcrumb-item active">Заявка #{{ order.id }}</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="card-title mb-0">
+                        <i class="bi bi-file-text"></i> Заявка #{{ order.id }}
+                    </h2>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h5>
+                                <i class="bi bi-person-circle"></i> Информация о клиенте
+                            </h5>
+                            <table class="table table-borderless">
+                                <tr>
+                                    <td><strong>Имя:</strong></td>
+                                    <td>{{ order.client_name }}</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>
+                                <i class="bi bi-calendar-event"></i> Детали записи
+                            </h5>
+                            <table class="table table-borderless">
+                                <tr>
+                                    <td><strong>Дата:</strong></td>
+                                    <td>
+                                        <i class="bi bi-calendar"></i> {{ order.date }}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Статус:</strong></td>
+                                    <td>
+                                        {% if order.status == 'новая' %}
+                                            <span class="badge bg-warning text-dark">
+                                                <i class="bi bi-clock"></i> {{ order.status|capfirst }}
+                                            </span>
+                                        {% elif order.status == 'подтвержденная' %}
+                                            <span class="badge bg-primary">
+                                                <i class="bi bi-check-circle"></i> {{ order.status|capfirst }}
+                                            </span>
+                                        {% elif order.status == 'выполненная' %}
+                                            <span class="badge bg-success">
+                                                <i class="bi bi-check-all"></i> {{ order.status|capfirst }}
+                                            </span>
+                                        {% elif order.status == 'отмененная' %}
+                                            <span class="badge bg-danger">
+                                                <i class="bi bi-x-circle"></i> {{ order.status|capfirst }}
+                                            </span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">
+                                                {{ order.status|capfirst }}
+                                            </span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12">
+                            <h5>
+                                <i class="bi bi-scissors"></i> Заказанные услуги
+                            </h5>
+                            <div class="mb-3">
+                                {% for service in order.services %}
+                                    <span class="badge bg-secondary me-2 mb-2 p-2">
+                                        <i class="bi bi-check"></i> {{ service }}
+                                    </span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+
+                    {% if order.master %}
+                    <div class="row">
+                        <div class="col-12">
+                            <h5>
+                                <i class="bi bi-person-workspace"></i> Назначенный мастер
+                            </h5>
+                            <div class="alert alert-info">
+                                <i class="bi bi-person-check"></i> {{ order.master }}
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-gear"></i> Действия
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'orders_list' %}" class="btn btn-outline-primary">
+                            <i class="bi bi-arrow-left"></i> К списку заявок
+                        </a>
+                        <button class="btn btn-outline-success" onclick="window.print()">
+                            <i class="bi bi-printer"></i> Печать
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h6 class="card-title mb-0">
+                        <i class="bi bi-info-circle"></i> Информация
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <small class="text-muted">
+                        <p><strong>ID заявки:</strong> {{ order.id }}</p>
+                        <p><strong>ID мастера:</strong> {{ order.master }}</p>
+                        <p><strong>ID мастера:</strong> {{ order.master_id }}</p>
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
