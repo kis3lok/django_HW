@@ -1,28 +1,99 @@
+{% extends "base.html" %}
 {% load static %}
-<!doctype html>
-<html lang="ru">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
-    <title>{{ title }}</title>
-  </head>
-  <body>
-    <header>
-        <nav>
-            <p>Навигация!</p>
-        </nav>
-    </header>
-    <main>
+
+{% block title %}Главная - Барбершоп "Hard Rock"{% endblock %}
+
+{% block content %}
+<div class="container-fluid p-0">
+    <section class="hero-section bg-dark text-light py-5">
         <div class="container">
-            {% block content %}
-            {% endblock content %}
+            <div class="row align-items-center min-vh-50">
+                <div class="col-lg-6">
+                    <h1 class="display-4 fw-bold">Барбершоп "Hard Rock"</h1>
+                    <p class="lead">Профессиональные услуги для настоящих мужчин. Стрижки, бритье, уход за бородой от опытных мастеров.</p>
+                    <a href="#booking" class="btn btn-primary btn-lg">
+                        <i class="bi bi-calendar-check"></i> Записаться
+                    </a>
+                </div>
+                <div class="col-lg-6 text-center">
+                    <i class="bi bi-scissors display-1"></i>
+                </div>
+            </div>
         </div>
-    </main>
-    <footer>
-        <p>2025 all rights reserved</p>
-    </footer>
-    <script src="{% static 'js/main.js' %}"></script>
-    
-  </body>
-</html>
+    </section>
+
+    <section id="about" class="py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 mx-auto text-center">
+                    <h2 class="mb-4">О нас</h2>
+                    <p class="lead">Мы создаем не просто стрижки, а стиль жизни. Наш барбершоп - это место, где традиции встречаются с современностью.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="services" class="py-5 bg-light">
+        <div class="container">
+            <h2 class="text-center mb-5">Наши услуги</h2>
+            <div class="row">
+                {% for service in services|slice:":6" %}
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 text-center">
+                        <div class="card-body">
+                            <i class="bi bi-scissors display-4 text-primary mb-3"></i>
+                            <h5 class="card-title">{{ service }}</h5>
+                            <p class="card-text">Профессиональное выполнение услуги</p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <section id="masters" class="py-5">
+        <div class="container">
+            <h2 class="text-center mb-5">Наши мастера</h2>
+            <div class="row">
+                {% for master in masters %}
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <i class="bi bi-person-circle display-4 text-primary mb-3"></i>
+                            <h5 class="card-title">{{ master.name }}</h5>
+                            <p class="card-text">Опытный мастер барбершопа. Специализация: сделает чудеса с Вашей головой или лицом!</p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <section id="booking" class="py-5 bg-primary text-light">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 mx-auto text-center">
+                    <h2 class="mb-4">Записаться на прием</h2>
+                    <p class="lead mb-4">Оставьте заявку, и мы свяжемся с вами для подтверждения записи</p>
+                    <form method="post" class="row g-3 justify-content-center">
+                        {% csrf_token %}
+                        <div class="col-md-4">
+                            <input type="text" class="form-control" name="client_name" placeholder="Ваше имя" required>
+                        </div>
+                        <div class="col-md-4">
+                            <input type="tel" class="form-control" name="phone" placeholder="Телефон" required>
+                        </div>
+                        <div class="col-md-4">
+                            <button type="submit" class="btn btn-light">
+                              <i class="bi bi-send"></i> Отправить заявку
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}

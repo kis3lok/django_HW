@@ -1,0 +1,50 @@
+<div class="card mb-3 shadow-sm">
+    <div class="card-body">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h5 class="card-title">
+                    <i class="bi bi-person"></i> {{ order.client_name }}
+                </h5>
+                <p class="card-text">
+                    <small class="text-muted">
+                        <i class="bi bi-calendar"></i> {{ order.date }}
+                    </small>
+                </p>
+                <p class="card-text">
+                    <strong>Услуги:</strong>
+                    {% for service in order.services %}
+                        <span class="badge bg-secondary me-1">{{ service }}</span>
+                    {% endfor %}
+                </p>
+                {% if order.master %}
+                <p class="card-text">
+                    <i class="bi bi-scissors"></i> <strong>Мастер:</strong> {{ order.master }}
+                </p>
+                {% endif %}
+            </div>
+            <div class="col-md-4 text-md-end">
+                {% if order.status == 'новая' %}
+                    <span class="badge bg-warning text-dark fs-6 mb-2">
+                        <i class="bi bi-clock"></i> {{ order.status|capfirst }}
+                    </span>
+                {% elif order.status == 'подтверждена' %}
+                    <span class="badge bg-primary fs-6 mb-2">
+                        <i class="bi bi-check-circle"></i> {{ order.status|capfirst }}
+                    </span>
+                {% elif order.status == 'выполнена' %}
+                    <span class="badge bg-success fs-6 mb-2">
+                        <i class="bi bi-check-all"></i> {{ order.status|capfirst }}
+                    </span>
+                {% else %}
+                    <span class="badge bg-secondary fs-6 mb-2">
+                        {{ order.status|capfirst }}
+                    </span>
+                {% endif %}
+                <br>
+                <a href="{% url 'order_detail' order.id %}" class="btn btn-outline-primary btn-sm">
+                    <i class="bi bi-eye"></i> Подробнее
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
