@@ -9,3 +9,5 @@ document.addEventListener('DOMContentLoaded', function() {
         console.error('Заголовок H1 не найден на странице.');
     }
 });
+
+
