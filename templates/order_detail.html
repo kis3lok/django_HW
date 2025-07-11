@@ -5,107 +5,137 @@
 
 {% block content %}
 <div class="container py-4">
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item">
-                <a href="{% url 'landing' %}">
-                    <i class="bi bi-house"></i> Главная
-                </a>
-            </li>
-            <li class="breadcrumb-item">
-                <a href="{% url 'orders_list' %}">
-                    <i class="bi bi-list-ul"></i> Заявки
-                </a>
-            </li>
-            <li class="breadcrumb-item active">Заявка #{{ order.id }}</li>
-        </ol>
-    </nav>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>
+            <i class="bi bi-file-text"></i> Заявка #{{ order.id }}
+        </h1>
+        <div>
+            <a href="{% url 'orders_list' %}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Назад к списку
+            </a>
+        </div>
+    </div>
 
     <div class="row">
         <div class="col-lg-8">
-            <div class="card shadow">
-                <div class="card-header bg-primary text-white">
-                    <h2 class="card-title mb-0">
-                        <i class="bi bi-file-text"></i> Заявка #{{ order.id }}
-                    </h2>
+            <div class="card shadow-sm">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="bi bi-info-circle"></i> Информация о заявке
+                    </h5>
+                    {% if order.status == 'not_approved' %}
+                        <span class="badge bg-warning text-dark fs-6">
+                            <i class="bi bi-clock"></i> Не подтвержден
+                        </span>
+                    {% elif order.status == 'approved' %}
+                        <span class="badge bg-primary fs-6">
+                            <i class="bi bi-check-circle"></i> Подтвержден
+                        </span>
+                    {% elif order.status == 'in_progress' %}
+                        <span class="badge bg-info fs-6">
+                            <i class="bi bi-hourglass-split"></i> В работе
+                        </span>
+                    {% elif order.status == 'completed' %}
+                        <span class="badge bg-success fs-6">
+                            <i class="bi bi-check-all"></i> Выполнен
+                        </span>
+                    {% elif order.status == 'cancelled' %}
+                        <span class="badge bg-danger fs-6">
+                            <i class="bi bi-x-circle"></i> Отменен
+                        </span>
+                    {% else %}
+                        <span class="badge bg-secondary fs-6">
+                            {{ order.get_status_display }}
+                        </span>
+                    {% endif %}
                 </div>
                 <div class="card-body">
-                    <div class="row mb-4">
-                        <div class="col-md-6">
-                            <h5>
-                                <i class="bi bi-person-circle"></i> Информация о клиенте
-                            </h5>
-                            <table class="table table-borderless">
-                                <tr>
-                                    <td><strong>Имя:</strong></td>
-                                    <td>{{ order.client_name }}</td>
-                                </tr>
-                            </table>
+                    <div class="row mb-3">
+                        <div class="col-sm-4">
+                            <strong><i class="bi bi-person"></i> Клиент:</strong>
                         </div>
-                        <div class="col-md-6">
-                            <h5>
-                                <i class="bi bi-calendar-event"></i> Детали записи
-                            </h5>
-                            <table class="table table-borderless">
-                                <tr>
-                                    <td><strong>Дата:</strong></td>
-                                    <td>
-                                        <i class="bi bi-calendar"></i> {{ order.date }}
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Статус:</strong></td>
-                                    <td>
-                                        {% if order.status == 'новая' %}
-                                            <span class="badge bg-warning text-dark">
-                                                <i class="bi bi-clock"></i> {{ order.status|capfirst }}
-                                            </span>
-                                        {% elif order.status == 'подтвержденная' %}
-                                            <span class="badge bg-primary">
-                                                <i class="bi bi-check-circle"></i> {{ order.status|capfirst }}
-                                            </span>
-                                        {% elif order.status == 'выполненная' %}
-                                            <span class="badge bg-success">
-                                                <i class="bi bi-check-all"></i> {{ order.status|capfirst }}
-                                            </span>
-                                        {% elif order.status == 'отмененная' %}
-                                            <span class="badge bg-danger">
-                                                <i class="bi bi-x-circle"></i> {{ order.status|capfirst }}
-                                            </span>
-                                        {% else %}
-                                            <span class="badge bg-secondary">
-                                                {{ order.status|capfirst }}
-                                            </span>
-                                        {% endif %}
-                                    </td>
-                                </tr>
-                            </table>
+                        <div class="col-sm-8">
+                            {{ order.client_name }}
                         </div>
                     </div>
-
-                    <div class="row">
-                        <div class="col-12">
-                            <h5>
-                                <i class="bi bi-scissors"></i> Заказанные услуги
-                            </h5>
-                            <div class="mb-3">
-                                {% for service in order.services %}
-                                    <span class="badge bg-secondary me-2 mb-2 p-2">
-                                        <i class="bi bi-check"></i> {{ service }}
-                                    </span>
-                                {% endfor %}
+                    
+                    <div class="row mb-3">
+                        <div class="col-sm-4">
+                            <strong><i class="bi bi-telephone"></i> Телефон:</strong>
+                        </div>
+                        <div class="col-sm-8">
+                            <a href="tel:{{ order.phone }}">{{ order.phone }}</a>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-sm-4">
+                            <strong><i class="bi bi-calendar"></i> Дата создания:</strong>
+                        </div>
+                        <div class="col-sm-8">
+                            {{ order.date_created|date:"d.m.Y H:i" }}
+                        </div>
+                    </div>
+                    
+                    {% if order.appointment_date %}
+                    <div class="row mb-3">
+                        <div class="col-sm-4">
+                            <strong><i class="bi bi-calendar-event"></i> Дата записи:</strong>
+                        </div>
+                        <div class="col-sm-8">
+                            {{ order.appointment_date|date:"d.m.Y H:i" }}
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="row mb-3">
+                        <div class="col-sm-4">
+                            <strong><i class="bi bi-clock-history"></i> Последнее обновление:</strong>
+                        </div>
+                        <div class="col-sm-8">
+                            {{ order.date_updated|date:"d.m.Y H:i" }}
+                        </div>
+                    </div>
+                    
+                    {% if order.master %}
+                    <div class="row mb-3">
+                        <div class="col-sm-4">
+                            <strong><i class="bi bi-scissors"></i> Мастер:</strong>
+                        </div>
+                        <div class="col-sm-8">
+                            <div class="d-flex align-items-center">
+                                {% if order.master.photo %}
+                                <img src="{{ order.master.photo.url }}" alt="{{ order.master.name }}" class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;">
+                                {% endif %}
+                                <div>
+                                    <strong>{{ order.master.name }}</strong>
+                                    <br>
+                                    <small class="text-muted">
+                                        <i class="bi bi-telephone"></i> {{ order.master.phone }}
+                                    </small>
+                                </div>
                             </div>
                         </div>
                     </div>
-
-                    {% if order.master %}
-                    <div class="row">
-                        <div class="col-12">
-                            <h5>
-                                <i class="bi bi-person-workspace"></i> Назначенный мастер
-                            </h5>
-                            <div class="alert alert-info">
-                                <i class="bi bi-person-check"></i> {{ order.master }}
+                    {% else %}
+                    <div class="row mb-3">
+                        <div class="col-sm-4">
+                            <strong><i class="bi bi-scissors"></i> Мастер:</strong>
+                        </div>
+                        <div class="col-sm-8">
+                            <span class="text-muted">Не назначен</span>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    {% if order.comment %}
+                    <div class="row mb-3">
+                        <div class="col-sm-4">
+                            <strong><i class="bi bi-chat-text"></i> Комментарий:</strong>
+                        </div>
+                        <div class="col-sm-8">
+                            <div class="bg-light p-3 rounded">
+                                {{ order.comment|linebreaks }}
                             </div>
                         </div>
                     </div>
@@ -113,35 +143,49 @@
                 </div>
             </div>
         </div>
-
+        
         <div class="col-lg-4">
-            <div class="card">
+            <div class="card shadow-sm mb-4">
                 <div class="card-header">
-                    <h5 class="card-title mb-0">
+                    <h5 class="mb-0">
+                        <i class="bi bi-list-check"></i> Услуги
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if order.services.all %}
+                        {% for service in order.services.all %}
+                        <div class="d-flex justify-content-between align-items-center mb-2 p-2 bg-light rounded">
+                            <div>
+                                <strong>{{ service.name }}</strong>
+                                <br>
+                                <small class="text-muted">{{ service.duration }} мин</small>
+                            </div>
+                            <div class="text-end">
+                                <span class="fw-bold text-primary">{{ service.price }} ₽</span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                                     
+                    {% else %}
+                        <p class="text-muted mb-0">Услуги не указаны</p>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <h5 class="mb-0">
                         <i class="bi bi-gear"></i> Действия
                     </h5>
                 </div>
                 <div class="card-body">
                     <div class="d-grid gap-2">
-                        <a href="{% url 'orders_list' %}" class="btn btn-outline-primary">
-                            <i class="bi bi-arrow-left"></i> К списку заявок
-                        </a>
+   
+                        <button class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-pencil"></i> Редактировать
+                        </button>
+                        
                     </div>
-                </div>
-            </div>
-
-            <div class="card mt-3">
-                <div class="card-header">
-                    <h6 class="card-title mb-0">
-                        <i class="bi bi-info-circle"></i> Информация
-                    </h6>
-                </div>
-                <div class="card-body">
-                    <small class="text-muted">
-                        <p><strong>ID заявки:</strong> {{ order.id }}</p>
-                        <p><strong>ID мастера:</strong> {{ order.master }}</p>
-                        <p><strong>ID мастера:</strong> {{ order.master_id }}</p>
-                    </small>
                 </div>
             </div>
         </div>

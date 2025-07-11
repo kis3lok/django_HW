@@ -14,6 +14,51 @@
         </div>
     </div>
 
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">
+                <i class="bi bi-search"></i> Поиск заявок
+            </h5>
+        </div>
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-6">
+                    <label for="search" class="form-label">Поисковый запрос</label>
+                    <input type="text" class="form-control" id="search" name="search" value="{{ search_query }}" placeholder="Введите текст для поиска...">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Искать по полям:</label>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="search_by_name" id="search_by_name" {% if search_by_name %}checked{% endif %}>
+                        <label class="form-check-label" for="search_by_name">
+                            <i class="bi bi-person"></i> По имени клиента
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="search_by_phone" id="search_by_phone" {% if search_by_phone %}checked{% endif %}>
+                        <label class="form-check-label" for="search_by_phone">
+                            <i class="bi bi-telephone"></i> По телефону
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="search_by_comment" id="search_by_comment" {% if search_by_comment %}checked{% endif %}>
+                        <label class="form-check-label" for="search_by_comment">
+                            <i class="bi bi-chat-text"></i> По комментарию
+                        </label>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-search"></i> Найти
+                    </button>
+                    <a href="{% url 'orders_list' %}" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-clockwise"></i> Сбросить
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
     {% if orders %}
         <div class="row">
             <div class="col-12">
@@ -27,41 +72,61 @@
                                     </h5>
                                     <p class="card-text">
                                         <small class="text-muted">
-                                            <i class="bi bi-calendar"></i> {{ order.date }}
+                                            <i class="bi bi-calendar"></i> Создана: {{ order.date_created|date:"d.m.Y H:i" }}
                                         </small>
+                                        {% if order.appointment_date %}
+                                        <br>
+                                        <small class="text-muted">
+                                            <i class="bi bi-calendar-event"></i> Запись на: {{ order.appointment_date|date:"d.m.Y H:i" }}
+                                        </small>
+                                        {% endif %}
                                     </p>
                                     <p class="card-text">
+                                        <i class="bi bi-telephone"></i> <strong>Телефон:</strong> {{ order.phone }}
+                                    </p>
+                                    {% if order.comment %}
+                                    <p class="card-text">
+                                        <i class="bi bi-chat-text"></i> <strong>Комментарий:</strong> {{ order.comment|truncatewords:10 }}
+                                    </p>
+                                    {% endif %}
+                                    <p class="card-text">
                                         <strong>Услуги:</strong>
-                                        {% for service in order.services %}
-                                            <span class="badge bg-secondary me-1">{{ service }}</span>
+                                        {% for service in order.services.all %}
+                                            <span class="badge bg-secondary me-1">{{ service.name }}</span>
+                                        {% empty %}
+                                            <span class="text-muted">Не указаны</span>
                                         {% endfor %}
                                     </p>
                                     {% if order.master %}
                                     <p class="card-text">
-                                        <i class="bi bi-scissors"></i> <strong>Мастер:</strong> {{ order.master }}
+                                        <i class="bi bi-scissors"></i> <strong>Мастер:</strong> {{ order.master.name }}
                                     </p>
                                     {% endif %}
                                 </div>
                                 <div class="col-md-4 text-md-end">
-                                    {% if order.status == 'новая' %}
+                                    {% if order.status == 'not_approved' %}
                                         <span class="badge bg-warning text-dark fs-6 mb-2">
-                                            <i class="bi bi-clock"></i> {{ order.status|capfirst }}
+                                            <i class="bi bi-clock"></i> Не подтвержден
                                         </span>
-                                    {% elif order.status == 'подтвержденная' %}
+                                    {% elif order.status == 'approved' %}
                                         <span class="badge bg-primary fs-6 mb-2">
-                                            <i class="bi bi-check-circle"></i> {{ order.status|capfirst }}
+                                            <i class="bi bi-check-circle"></i> Подтвержден
                                         </span>
-                                    {% elif order.status == 'выполненная' %}
+                                    {% elif order.status == 'in_progress' %}
+                                        <span class="badge bg-info fs-6 mb-2">
+                                            <i class="bi bi-hourglass-split"></i> В работе
+                                        </span>
+                                    {% elif order.status == 'completed' %}
                                         <span class="badge bg-success fs-6 mb-2">
-                                            <i class="bi bi-check-all"></i> {{ order.status|capfirst }}
+                                            <i class="bi bi-check-all"></i> Выполнен
                                         </span>
-                                    {% elif order.status == 'отмененная' %}
+                                    {% elif order.status == 'cancelled' %}
                                         <span class="badge bg-danger fs-6 mb-2">
-                                            <i class="bi bi-x-circle"></i> {{ order.status|capfirst }}
+                                            <i class="bi bi-x-circle"></i> Отменен
                                         </span>
                                     {% else %}
                                         <span class="badge bg-secondary fs-6 mb-2">
-                                            {{ order.status|capfirst }}
+                                            {{ order.get_status_display }}
                                         </span>
                                     {% endif %}
                                     <br>
@@ -114,11 +179,19 @@
     {% else %}
         <div class="text-center py-5">
             <i class="bi bi-inbox display-1 text-muted mb-4"></i>
-            <h3 class="text-muted">Заявок пока нет</h3>
-            <p class="text-muted">Когда появятся новые заявки, они будут отображены здесь</p>
-            <a href="{% url 'landing' %}" class="btn btn-primary">
-                <i class="bi bi-house"></i> На главную
-            </a>
+            {% if search_query %}
+                <h3 class="text-muted">По запросу "{{ search_query }}" ничего не найдено</h3>
+                <p class="text-muted">Попробуйте изменить параметры поиска</p>
+                <a href="{% url 'orders_list' %}" class="btn btn-primary">
+                    <i class="bi bi-arrow-left"></i> Показать все заявки
+                </a>
+            {% else %}
+                <h3 class="text-muted">Заявок пока нет</h3>
+                <p class="text-muted">Когда появятся новые заявки, они будут отображены здесь</p>
+                <a href="{% url 'landing' %}" class="btn btn-primary">
+                    <i class="bi bi-house"></i> На главную
+                </a>
+            {% endif %}
         </div>
     {% endif %}
 </div>

@@ -1,17 +1,26 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import user_passes_test
-from django.http import HttpResponseRedirect, Http404
+from django.http import HttpResponseRedirect
 from django.urls import reverse
-from .data import masters, services, orders, STATUS_NEW, STATUS_CONFIRMED, STATUS_CANCELLED, STATUS_COMPLETED
+from django.db.models import Q
+from .models import Master, Service, Order, Review
 
 def landing(request):
+    """
+    Главная страница с блоками мастеров и отзывов
+    """
     if request.method == 'POST':
         return HttpResponseRedirect(reverse('thanks'))
+    
+    masters = Master.objects.filter(is_active=True)
+    reviews = Review.objects.filter(is_published=True).select_related('master')[:6]
+    services = Service.objects.all()
     
     context = {
         'title': 'Главная страница',
         'masters': masters,
         'services': services,
+        'reviews': reviews,
     }
     return render(request, 'landing.html', context)
 
@@ -33,46 +42,63 @@ def is_staff_user(user):
 @user_passes_test(is_staff_user)
 def orders_list(request):
     """
-    Список заявок
+    Список заявок с поиском по Q-объектам
     """
-    new_orders_count = len([order for order in orders if order['status'] == STATUS_NEW])
-    confirmed_orders_count = len([order for order in orders if order['status'] == STATUS_CONFIRMED])
-    completed_orders_count = len([order for order in orders if order['status'] == STATUS_COMPLETED])
-    cancelled_orders_count = len([order for order in orders if order['status'] == STATUS_CANCELLED])
+    orders = Order.objects.all().select_related('master').prefetch_related('services').order_by('-date_created')
     
-    orders_with_masters = []
-    for order in orders:
-        order_copy = order.copy()
-        master = next((m for m in masters if m['id'] == order['master_id']), None)
-        order_copy['master'] = master['name'] if master else 'Не назначен'
-        orders_with_masters.append(order_copy)
+    search_query = request.GET.get('search', '')
+    search_by_name = request.GET.get('search_by_name', 'on')
+    search_by_phone = request.GET.get('search_by_phone', '')
+    search_by_comment = request.GET.get('search_by_comment', '')
+    
+
+    if search_query:
+        q_objects = Q()
+        
+        if search_by_name:
+            q_objects |= Q(client_name__icontains=search_query)
+        
+        if search_by_phone:
+            q_objects |= Q(phone__icontains=search_query)
+        
+        if search_by_comment:
+            q_objects |= Q(comment__icontains=search_query)
+        
+        if q_objects:
+            orders = orders.filter(q_objects)
+    
+    new_orders_count = orders.filter(status='not_approved').count()
+    confirmed_orders_count = orders.filter(status='approved').count()
+    completed_orders_count = orders.filter(status='completed').count()
+    cancelled_orders_count = orders.filter(status='cancelled').count()
     
     context = {
         'title': 'Список заявок',
-        'orders': orders_with_masters,
+        'orders': orders,
         'new_orders_count': new_orders_count,
         'confirmed_orders_count': confirmed_orders_count,
         'completed_orders_count': completed_orders_count,
         'cancelled_orders_count': cancelled_orders_count,
+        'search_query': search_query,
+        'search_by_name': search_by_name,
+        'search_by_phone': search_by_phone,
+        'search_by_comment': search_by_comment,
     }
     return render(request, 'orders_list.html', context)
 
 @user_passes_test(is_staff_user)
 def order_detail(request, order_id):
-    order = next((o for o in orders if o['id'] == order_id), None)
-    
-    if not order:
-        raise Http404("Заявка не найдена")
-    
-    order_copy = order.copy()
-    master = next((m for m in masters if m['id'] == order['master_id']), None)
-    order_copy['master'] = master['name'] if master else 'Не назначен'
+    """
+    Детальная страница заявки
+    """
+    order = get_object_or_404(Order.objects.select_related('master').prefetch_related('services'), id=order_id)
     
     context = {
         'title': f'Заявка #{order_id}',
-        'order': order_copy,
+        'order': order,
     }
     return render(request, 'order_detail.html', context)
+
 
 def order_list(request):
     return orders_list(request)
