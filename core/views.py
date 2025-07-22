@@ -1,9 +1,10 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import user_passes_test
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.db.models import Q
 from .models import Master, Service, Order, Review
+from .forms import ReviewForm, OrderForm
 
 def landing(request):
     """
@@ -32,6 +33,47 @@ def thanks(request):
         'title': 'Спасибо за заявку',
     }
     return render(request, 'thanks.html', context)
+
+def create_review(request):
+    """
+    Создание отзыва
+    """
+    if request.method == 'POST':
+        form = ReviewForm(request.POST)
+        if form.is_valid():
+            review = form.save(commit=False)
+            review.is_published = False
+            review.save()
+            return redirect('thanks')
+    else:
+        form = ReviewForm()
+    
+    context = {
+        'title': 'Оставить отзыв',
+        'form': form,
+    }
+    return render(request, 'create_review.html', context)
+
+def create_order(request):
+    """
+    Создание заявки
+    """
+    if request.method == 'POST':
+        form = OrderForm(request.POST)
+        if form.is_valid():
+            order = form.save(commit=False)
+            order.status = 'not_approved'
+            order.save()
+            form.save_m2m()
+            return redirect('thanks')
+    else:
+        form = OrderForm()
+    
+    context = {
+        'title': 'Записаться на услуги',
+        'form': form,
+    }
+    return render(request, 'create_order.html', context)
 
 def is_staff_user(user):
     """
@@ -98,10 +140,3 @@ def order_detail(request, order_id):
         'order': order,
     }
     return render(request, 'order_detail.html', context)
-
-
-def order_list(request):
-    return orders_list(request)
-
-def order_detailed(request, order_id):
-    return order_detail(request, order_id)

@@ -10,7 +10,9 @@
             <div class="col-lg-6">
                 <h1 class="display-4 fw-bold mb-4">Барбершоп "Hard Rock"</h1>
                 <p class="lead mb-4">Профессиональные услуги для настоящих мужчин. Стрижки, бритье, уход за бородой от опытных мастеров.</p>
-                <a href="#services" class="btn btn-primary btn-lg">Наши услуги</a>
+                <a href="{% url 'create_order' %}" class="btn btn-primary btn-lg">
+                    <i class="bi bi-calendar-check"></i> Записаться сейчас
+                </a>
             </div>
             <div class="col-lg-6">
                 <img src="{% static 'images/hero-barbershop.jpg' %}" alt="Барбершоп" class="img-fluid rounded">
@@ -146,34 +148,127 @@
             <p class="text-muted">Отзывов пока нет. Станьте первым!</p>
         </div>
         {% endif %}
+        
+        <div class="text-center mt-4">
+            <a href="{% url 'create_review' %}" class="btn btn-outline-primary btn-lg">
+                <i class="bi bi-chat-quote"></i> Оставить отзыв
+            </a>
+        </div>
     </div>
 </section>
 
-<section class="py-5 bg-primary text-white">
+
+<section class="py-5 bg-primary text-white" id="booking">
     <div class="container">
         <div class="row justify-content-center">
-            <div class="col-lg-8">
-                <h2 class="text-center mb-4">Записаться на стрижку</h2>
-                <form method="post" class="row g-3">
-                    {% csrf_token %}
+            <div class="col-lg-10">
+                <div class="text-center mb-5">
+                    <h2 class="display-5 fw-bold mb-3">
+                        <i class="bi bi-calendar-check"></i> Записаться на стрижку
+                    </h2>
+                    <p class="lead">
+                        Выберите удобный способ записи.
+                    </p>
+                </div>
+                
+                <div class="row g-4">
                     <div class="col-md-6">
-                        <label for="client_name" class="form-label">Ваше имя</label>
-                        <input type="text" class="form-control" id="client_name" name="client_name" required>
+                        <div class="card h-100 shadow-lg border-0">
+                            <div class="card-body text-center p-4">
+                                <div class="mb-3">
+                                    <i class="bi bi-scissors text-primary" style="font-size: 3rem;"></i>
+                                </div>
+                                <h4 class="card-title text-dark mb-3">Записаться на услуги</h4>
+                                <p class="card-text text-muted mb-4">
+                                    Выберите мастера, услуги и удобное время. 
+                                    Полная форма записи с выбором всех параметров.
+                                </p>
+                                <ul class="list-unstyled text-start mb-4">
+                                    <li class="mb-2">
+                                        <i class="bi bi-check-circle text-success me-2"></i>
+                                        Выбор мастера
+                                    </li>
+                                    <li class="mb-2">
+                                        <i class="bi bi-check-circle text-success me-2"></i>
+                                        Выбор услуг
+                                    </li>
+                                    <li class="mb-2">
+                                        <i class="bi bi-check-circle text-success me-2"></i>
+                                        Выбор времени
+                                    </li>
+                                    <li class="mb-2">
+                                        <i class="bi bi-check-circle text-success me-2"></i>
+                                        Дополнительные пожелания
+                                    </li>
+                                </ul>
+                                <a href="{% url 'create_order' %}" class="btn btn-primary btn-lg w-100">
+                                    <i class="bi bi-calendar-plus"></i> Записаться
+                                </a>
+                            </div>
+                        </div>
                     </div>
+                    
                     <div class="col-md-6">
-                        <label for="phone" class="form-label">Телефон</label>
-                        <input type="tel" class="form-control" id="phone" name="phone" required>
+                        <div class="card h-100 shadow-lg border-0">
+                            <div class="card-body text-center p-4">
+                                <div class="mb-3">
+                                    <i class="bi bi-chat-heart text-success" style="font-size: 3rem;"></i>
+                                </div>
+                                <h4 class="card-title text-dark mb-3">Оставить отзыв</h4>
+                                <p class="card-text text-muted mb-4">
+                                    Поделитесь впечатлениями о работе наших мастеров. 
+                                </p>
+                                <ul class="list-unstyled text-start mb-4">
+                                    <li class="mb-2">
+                                        <i class="bi bi-check-circle text-success me-2"></i>
+                                        Оценка мастера
+                                    </li>
+                                    <li class="mb-2">
+                                        <i class="bi bi-check-circle text-success me-2"></i>
+                                        Подробный отзыв
+                                    </li>
+                                    <li class="mb-2">
+                                        <i class="bi bi-check-circle text-success me-2"></i>
+                                        Анонимно или с именем
+                                    </li>
+                                    <li class="mb-2">
+                                        <i class="bi bi-check-circle text-success me-2"></i>
+                                        Помощь другим клиентам
+                                    </li>
+                                </ul>
+                                <a href="{% url 'create_review' %}" class="btn btn-success btn-lg w-100">
+                                    <i class="bi bi-star"></i> Оставить отзыв
+                                </a>
+                            </div>
+                        </div>
                     </div>
+                </div>
+                
+                <div class="row mt-5">
                     <div class="col-12">
-                        <label for="comment" class="form-label">Комментарий</label>
-                        <textarea class="form-control" id="comment" name="comment" rows="3"></textarea>
+                        <div class="text-center">
+                            <h5 class="mb-3">Почему выбирают нас?</h5>
+                            <div class="row">
+                                <div class="col-md-3 mb-3">
+                                    <i class="bi bi-award-fill mb-2" style="font-size: 2rem;"></i>
+                                    <p class="mb-0">Опытные мастера</p>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <i class="bi bi-clock-fill mb-2" style="font-size: 2rem;"></i>
+                                    <p class="mb-0">Точно в срок</p>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <i class="bi bi-gem mb-2" style="font-size: 2rem;"></i>
+                                    <p class="mb-0">Качественные услуги</p>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <i class="bi bi-currency-dollar mb-2" style="font-size: 2rem;"></i>
+                                    <p class="mb-0">Доступные цены</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-12 text-center">
-                        <button type="submit" class="btn btn-light btn-lg">
-                            <i class="bi bi-calendar-check"></i> Записаться
-                        </button>
-                    </div>
-                </form>
+                </div>
             </div>
         </div>
     </div>

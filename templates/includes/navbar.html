@@ -20,7 +20,14 @@
                     <a class="nav-link" href="{% url 'landing' %}#masters">Мастера</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url 'landing' %}#booking">Запись</a>
+                    <a class="nav-link" href="{% url 'create_order' %}">
+                        <i class="bi bi-calendar-check"></i> Записаться
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'create_review' %}">
+                        <i class="bi bi-chat-quote"></i> Отзыв
+                    </a>
                 </li>
                 {% if user.is_staff %}
                 <li class="nav-item">
