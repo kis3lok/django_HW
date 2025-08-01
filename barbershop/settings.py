@@ -37,6 +37,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -44,7 +45,16 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'core',
+    
 ]
+
+JAZZMIN_SETTINGS = {
+    'site_title': 'Барбершоп "Hard Rock"',
+    'site_header': 'Барбершоп "Hard Rock"',
+    'site_brand': 'Барбершоп "Hard Rock"',
+    'copyright': '2025 Барбершоп "Hard Rock"',
+}
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -111,9 +121,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'ru-ru'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Moscow'
 
 USE_I18N = True
 
@@ -135,3 +145,15 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+MISTRAL_MODERATIONS_GRADES = {
+    "hate_and_discrimination": 0.1,
+    "sexual": 0.1,
+    "violence_and_threats": 0.1,
+    "dangerous_and_criminal_content": 0.1,
+    "selfharm": 0.1,
+    "health": 0.1,
+    "financial": 0.1,
+    "law": 0.1,
+    "pii": 0.1,
+}

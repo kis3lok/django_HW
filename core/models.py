@@ -134,3 +134,17 @@ class Review(models.Model):
         master_name = self.master.name if self.master else "Неизвестный мастер"
         client_name = self.client_name or "Анонимный клиент"
         return f"Отзыв от {client_name} о {master_name}"
+    
+    AI_CHOICES = [
+    ("ai_checked_true", "Проверено ИИ"),
+    ("ai_cancelled", "Отменено ИИ"),
+    ("ai_checked_in_progress", "В процессе проверки"),
+    ("ai_checked_false", "Не проверено"),
+    ]
+
+    ai_checked_status = models.CharField(
+    max_length=30,
+    choices=AI_CHOICES,
+    default="ai_checked_false",
+    verbose_name="Статус ИИ",
+    )
