@@ -5,6 +5,7 @@ from django.urls import reverse
 from django.db.models import Q
 from .models import Master, Service, Order, Review
 from .forms import ReviewForm, OrderForm
+from django.contrib import messages
 
 def landing(request):
     """
@@ -44,6 +45,7 @@ def create_review(request):
             review = form.save(commit=False)
             review.is_published = False
             review.save()
+            messages.success(request, 'Ваш отзыв успешно отправлен!')
             return redirect('thanks')
     else:
         form = ReviewForm()
@@ -65,6 +67,7 @@ def create_order(request):
             order.status = 'not_approved'
             order.save()
             form.save_m2m()
+            messages.success(request, 'Ваша заявка успешно отправлена!')
             return redirect('thanks')
     else:
         form = OrderForm()
