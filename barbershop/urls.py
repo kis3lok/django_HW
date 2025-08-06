@@ -15,7 +15,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from core.views import landing, thanks, orders_list, order_detail, create_review, create_order
 from django.conf import settings
 from django.conf.urls.static import static
@@ -28,6 +28,7 @@ urlpatterns = [
     path('orders/<int:order_id>/', order_detail, name='order_detail'),
     path('review/create/', create_review, name='create_review'),
     path('order/create/', create_order, name='create_order'),
+    path('users/', include('users.urls')),
 ]
 
 if settings.DEBUG:

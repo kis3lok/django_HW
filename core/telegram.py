@@ -5,8 +5,6 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-
-
 logging.basicConfig(level=logging.DEBUG)
 
 async def send_telegram_message(token, chat_id, message, parse_mode="Markdown"):

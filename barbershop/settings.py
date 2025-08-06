@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'core',
+    'users.apps.UsersConfig',
     
 ]
 
@@ -160,3 +161,7 @@ MISTRAL_MODERATIONS_GRADES = {
 
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
+
+LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = 'landing/'
+LOGOUT_REDIRECT_URL = 'landing/'

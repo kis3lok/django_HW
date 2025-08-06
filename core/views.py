@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib.auth.decorators import user_passes_test
+from django.contrib.auth.decorators import user_passes_test, login_required
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.db.models import Q
@@ -84,6 +84,7 @@ def is_staff_user(user):
     """
     return user.is_authenticated and user.is_staff
 
+@login_required
 @user_passes_test(is_staff_user)
 def orders_list(request):
     """
