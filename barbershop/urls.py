@@ -16,18 +16,25 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from core.views import landing, thanks, orders_list, order_detail, create_review, create_order
+from core.views import (
+    LandingView, 
+    ThanksView, 
+    OrdersListView, 
+    OrderDetailView, 
+    ReviewCreateView, 
+    OrderCreateView
+)
 from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', landing, name='landing'),
-    path('thanks/', thanks, name='thanks'),
-    path('orders/', orders_list, name='orders_list'),
-    path('orders/<int:order_id>/', order_detail, name='order_detail'),
-    path('review/create/', create_review, name='create_review'),
-    path('order/create/', create_order, name='create_order'),
+    path('', LandingView.as_view(), name='landing'),
+    path('thanks/', ThanksView.as_view(), name='thanks'),
+    path('orders/', OrdersListView.as_view(), name='orders_list'),
+    path('orders/<int:pk>/', OrderDetailView.as_view(), name='order_detail'),
+    path('review/create/', ReviewCreateView.as_view(), name='create_review'),
+    path('order/create/', OrderCreateView.as_view(), name='create_order'),
     path('users/', include('users.urls')),
 ]
 
